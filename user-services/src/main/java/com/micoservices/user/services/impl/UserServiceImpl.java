@@ -51,15 +51,22 @@ public class UserServiceImpl implements UserServices {
 		Optional<User> userInfo = TO_USER.apply(userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "User ID", userId)));
 		try {
-			// Getting user ratings with rest template
-			// (can be done with rest client but need higher versions).
-			HashMap ratings = restTemplate.getForObject("http://localhost:9193/api/v1/ratings/user/" + userId,
+			
+			/* Getting user ratings with rest template
+			 (can be done with rest client but need higher versions).
+			URL http://localhost:9193/api/v1/ratings/user can also be work ,
+			but when ports get changed , we also need to change the urls .
+			So making it dynamic by Using Application Name , since It is 
+			registered on Service Registry(Eureka) 
+			*/
+			
+			HashMap ratings = restTemplate.getForObject("http://RATINGS-SERVICE/api/v1/ratings/user/" + userId,
 					HashMap.class);
 			List<Ratings> ratingList = JsonUtils.convertJsonToList(ratings.get("DATA"), Ratings.class);
 
 			// Setting each hotel to its associated ratings
 			ratingList.forEach(p -> {
-				HashMap map = restTemplate.getForObject("http://localhost:9192/api/v1/hotels/" + p.getHotelId(),
+				HashMap map = restTemplate.getForObject("http://HOTEL-SERVICE/api/v1/hotels/" + p.getHotelId(),
 						HashMap.class);
 				Hotel hotel = JsonUtils.convertJsonToObject(map.get("DATA"), Hotel.class);
 				p.setHotel(hotel);
@@ -92,13 +99,13 @@ public class UserServiceImpl implements UserServices {
 	public List<User> getAll() {
 		List<User> users = TO_USERS.apply(userRepository.findAll());
 		users.forEach(p -> {
-			HashMap ratings = restTemplate.getForObject("http://localhost:9193/api/v1/ratings/user/" + p.getUserId(),
+			HashMap ratings = restTemplate.getForObject("http://RATINGS-SERVICE/api/v1/ratings/user/" + p.getUserId(),
 					HashMap.class);
 			List<Ratings> ratingList = JsonUtils.convertJsonToList(ratings.get("DATA"), Ratings.class);
 
 			// Setting each hotel to its associated ratings
 			ratingList.forEach(r -> {
-				HashMap map = restTemplate.getForObject("http://localhost:9192/api/v1/hotels/" + r.getHotelId(),
+				HashMap map = restTemplate.getForObject("http://HOTEL-SERVICE/api/v1/hotels/" + r.getHotelId(),
 						HashMap.class);
 				Hotel hotel = JsonUtils.convertJsonToObject(map.get("DATA"), Hotel.class);
 				r.setHotel(hotel);
