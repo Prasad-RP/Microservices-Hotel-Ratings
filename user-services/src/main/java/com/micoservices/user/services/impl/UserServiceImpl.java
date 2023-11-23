@@ -5,16 +5,21 @@ import static com.micoservices.user.dto.mapper.UserMapper.TO_USERS;
 import static com.micoservices.user.dto.mapper.UserMapper.TO_USER_MASTER;
 import static com.micoservices.user.utils.StringUtils.generateRandomUserName;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.micoservices.user.dto.Hotel;
+import com.micoservices.user.dto.Ratings;
 import com.micoservices.user.dto.User;
 import com.micoservices.user.entity.UserMaster;
 import com.micoservices.user.exception.ResourceNotFoundException;
 import com.micoservices.user.repository.UserRepository;
 import com.micoservices.user.services.UserServices;
+import com.micoservices.user.utils.JsonUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserServices {
 
 	private final UserRepository userRepository;
+	private final RestTemplate restTemplate;
 
 	@Override
 	public Optional<User> save(User user) {
@@ -39,10 +45,32 @@ public class UserServiceImpl implements UserServices {
 		return TO_USER.apply(userRepository.save(master.get()));
 	}
 
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public Optional<User> getById(String userId) {
-		return TO_USER.apply(userRepository.findById(userId)
+		Optional<User> userInfo = TO_USER.apply(userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "User ID", userId)));
+		try {
+			// Getting user ratings with rest template
+			// (can be done with rest client but need higher versions).
+			HashMap ratings = restTemplate.getForObject("http://localhost:9193/api/v1/ratings/user/" + userId,
+					HashMap.class);
+			List<Ratings> ratingList = JsonUtils.convertJsonToList(ratings.get("DATA"), Ratings.class);
+
+			// Setting each hotel to its associated ratings
+			ratingList.forEach(p -> {
+				HashMap map = restTemplate.getForObject("http://localhost:9192/api/v1/hotels/" + p.getHotelId(),
+						HashMap.class);
+				Hotel hotel = JsonUtils.convertJsonToObject(map.get("DATA"), Hotel.class);
+				p.setHotel(hotel);
+			});
+
+			userInfo.ifPresent(u -> u.setRatings(ratingList));
+			return userInfo;
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+		return userInfo;
 	}
 
 	public Boolean delete(String userId) {
@@ -59,9 +87,25 @@ public class UserServiceImpl implements UserServices {
 			throw new ResourceNotFoundException("User", "User ID", userId);
 	}
 
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public List<User> getAll() {
-		return TO_USERS.apply(userRepository.findAll());
-	}
+		List<User> users = TO_USERS.apply(userRepository.findAll());
+		users.forEach(p -> {
+			HashMap ratings = restTemplate.getForObject("http://localhost:9193/api/v1/ratings/user/" + p.getUserId(),
+					HashMap.class);
+			List<Ratings> ratingList = JsonUtils.convertJsonToList(ratings.get("DATA"), Ratings.class);
 
+			// Setting each hotel to its associated ratings
+			ratingList.forEach(r -> {
+				HashMap map = restTemplate.getForObject("http://localhost:9192/api/v1/hotels/" + r.getHotelId(),
+						HashMap.class);
+				Hotel hotel = JsonUtils.convertJsonToObject(map.get("DATA"), Hotel.class);
+				r.setHotel(hotel);
+			});
+			p.setRatings(ratingList);
+		});
+
+		return users;
+	}
 }
