@@ -1,9 +1,10 @@
 package com.micoservices.hotel.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,12 +17,12 @@ import lombok.Setter;
 public class HotelMaster {
 
 	@Id
-	@Column(name="hotel_id")
+	@Column(name = "hotel_id")
 	private String hotelId;
-	
-	@Column(name="hotel_name")
+
+	@Column(name = "hotel_name")
 	private String hotelName;
-	
-	@Column(name="hotel_address")
+
+	@Column(name = "hotel_address")
 	private String hotelAddress;
 }

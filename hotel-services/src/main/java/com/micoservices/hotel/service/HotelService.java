@@ -5,9 +5,7 @@ import java.util.Optional;
 
 import com.micoservices.hotel.dto.Hotel;
 
-import jakarta.transaction.Transactional;
 
-@Transactional
 public interface HotelService {
 
 	Optional<Hotel> save(Hotel hotel);
