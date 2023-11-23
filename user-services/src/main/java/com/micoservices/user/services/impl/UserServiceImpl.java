@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserServices {
 			registered on Service Registry(Eureka) 
 			*/
 			
-			HashMap ratings = restTemplate.getForObject("http://RATINGS-SERVICE/api/v1/ratings/user/" + userId,
+			HashMap ratings = restTemplate.getForObject("http://RATING-SERVICE/api/v1/ratings/user/" + userId,
 					HashMap.class);
 			List<Ratings> ratingList = JsonUtils.convertJsonToList(ratings.get("DATA"), Ratings.class);
 
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserServices {
 	public List<User> getAll() {
 		List<User> users = TO_USERS.apply(userRepository.findAll());
 		users.forEach(p -> {
-			HashMap ratings = restTemplate.getForObject("http://RATINGS-SERVICE/api/v1/ratings/user/" + p.getUserId(),
+			HashMap ratings = restTemplate.getForObject("http://RATING-SERVICE/api/v1/ratings/user/" + p.getUserId(),
 					HashMap.class);
 			List<Ratings> ratingList = JsonUtils.convertJsonToList(ratings.get("DATA"), Ratings.class);
 
