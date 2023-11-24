@@ -22,17 +22,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.micoservices.user.dto.User;
 import com.micoservices.user.services.UserServices;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(BASE_USER)
+@RequestMapping(BASE_USER)@Slf4j
 public class UserApis {
 
 	private final UserServices userServices;
 
 	@PostMapping
-	ResponseEntity<Map<Object, Object>> createUser(@RequestBody User user) {
+	public ResponseEntity<Map<Object, Object>> createUser(@RequestBody User user) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, userServices.save(user));
@@ -40,15 +42,25 @@ public class UserApis {
 	}
 
 	@GetMapping(DY_USER_ID)
-	ResponseEntity<Map<Object, Object>> getUserById(@PathVariable String userId) {
+	@CircuitBreaker(name = "ratingHotelBreaker", fallbackMethod = "handleCircuitBreaks")
+	public ResponseEntity<Map<Object, Object>> getUserById(@PathVariable String userId) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, userServices.getById(userId));
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 
+	// Method to handle circuit breaks
+	public ResponseEntity<Map<Object, Object>> handleCircuitBreaks(Exception ex) {
+		Map<Object, Object> map = new HashMap<>();
+		log.info("failed to get data for user ,{}",ex.getMessage());
+		map.put(SUCCESS, false);
+		map.put(DATA, "Service is temporarily down, Please try after some time.");
+		return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+	}
+
 	@GetMapping
-	ResponseEntity<Map<Object, Object>> getAllUsers() {
+	public ResponseEntity<Map<Object, Object>> getAllUsers() {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, userServices.getAll());
@@ -56,7 +68,7 @@ public class UserApis {
 	}
 
 	@PutMapping
-	ResponseEntity<Map<Object, Object>> updateUser(@RequestBody User user) {
+	public ResponseEntity<Map<Object, Object>> updateUser(@RequestBody User user) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, userServices.update(user));
@@ -64,7 +76,7 @@ public class UserApis {
 	}
 
 	@DeleteMapping(DY_USER_ID)
-	ResponseEntity<Map<Object, Object>> deleteUser(@PathVariable String userId) {
+	public ResponseEntity<Map<Object, Object>> deleteUser(@PathVariable String userId) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, userServices.delete(userId));

@@ -50,33 +50,28 @@ public class UserServiceImpl implements UserServices {
 	public Optional<User> getById(String userId) {
 		Optional<User> userInfo = TO_USER.apply(userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "User ID", userId)));
-		try {
-			
-			/* Getting user ratings with rest template
-			 (can be done with rest client but need higher versions).
-			URL http://localhost:9193/api/v1/ratings/user can also be work ,
-			but when ports get changed , we also need to change the urls .
-			So making it dynamic by Using Application Name , since It is 
-			registered on Service Registry(Eureka) 
-			*/
-			
-			HashMap ratings = restTemplate.getForObject("http://RATING-SERVICE/api/v1/ratings/user/" + userId,
+
+		/*
+		 * Getting user ratings with rest template (can be done with rest client but
+		 * need higher versions). URL http://localhost:9193/api/v1/ratings/user can also
+		 * be work , but when ports get changed , we also need to change the urls . So
+		 * making it dynamic by Using Application Name , since It is registered on
+		 * Service Registry(Eureka)
+		 */
+
+		HashMap ratings = restTemplate.getForObject("http://RATING-SERVICE/api/v1/ratings/user/" + userId,
+				HashMap.class);
+		List<Ratings> ratingList = JsonUtils.convertJsonToList(ratings.get("DATA"), Ratings.class);
+
+		// Setting each hotel to its associated ratings
+		ratingList.forEach(p -> {
+			HashMap map = restTemplate.getForObject("http://HOTEL-SERVICE/api/v1/hotels/" + p.getHotelId(),
 					HashMap.class);
-			List<Ratings> ratingList = JsonUtils.convertJsonToList(ratings.get("DATA"), Ratings.class);
+			Hotel hotel = JsonUtils.convertJsonToObject(map.get("DATA"), Hotel.class);
+			p.setHotel(hotel);
+		});
 
-			// Setting each hotel to its associated ratings
-			ratingList.forEach(p -> {
-				HashMap map = restTemplate.getForObject("http://HOTEL-SERVICE/api/v1/hotels/" + p.getHotelId(),
-						HashMap.class);
-				Hotel hotel = JsonUtils.convertJsonToObject(map.get("DATA"), Hotel.class);
-				p.setHotel(hotel);
-			});
-
-			userInfo.ifPresent(u -> u.setRatings(ratingList));
-			return userInfo;
-		} catch (Exception e) {
-			System.err.println(e);
-		}
+		userInfo.ifPresent(u -> u.setRatings(ratingList));
 		return userInfo;
 	}
 
