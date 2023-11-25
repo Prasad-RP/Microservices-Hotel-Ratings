@@ -23,7 +23,7 @@ import com.micoservices.user.dto.User;
 import com.micoservices.user.services.UserServices;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,7 +46,8 @@ public class UserApis {
 	@GetMapping(DY_USER_ID)
 	// @CircuitBreaker(name = "ratingHotelBreaker", fallbackMethod =
 	// "handleCircuitBreaks")
-	@Retry(name = "serviceRetrier", fallbackMethod = "handleCircuitBreaks")
+	// @Retry(name = "serviceRetrier", fallbackMethod = "handleCircuitBreaks")
+	@RateLimiter(name = "serviceRateLimiter", fallbackMethod = "handleRateLimiting")
 	public ResponseEntity<Map<Object, Object>> getUserById(@PathVariable String userId) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
@@ -62,6 +63,16 @@ public class UserApis {
 		map.put(SUCCESS, false);
 		map.put(DATA, "Service is temporarily down, Please try after some time.");
 		return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+	}
+
+	// Method to handle rate limiter
+	public ResponseEntity<Map<Object, Object>> handleRateLimiting(Exception ex) {
+		Map<Object, Object> map = new HashMap<>();
+		log.info("failed to get data for user ,{}", ex.getMessage());
+		log.info("too many response...");
+		map.put(SUCCESS, false);
+		map.put(DATA, "Too many connections.");
+		return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
 	}
 
 	@GetMapping
