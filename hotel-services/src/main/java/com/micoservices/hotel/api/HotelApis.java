@@ -30,7 +30,7 @@ public class HotelApis {
 	private final HotelService hotelService;
 
 	@PostMapping
-	ResponseEntity<Map<Object, Object>> createHotel(@RequestBody Hotel hotel) {
+	public ResponseEntity<Map<Object, Object>> createHotel(@RequestBody Hotel hotel) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, hotelService.save(hotel));
@@ -38,7 +38,7 @@ public class HotelApis {
 	}
 
 	@GetMapping
-	ResponseEntity<Map<Object, Object>> getAllHotels() {
+	public ResponseEntity<Map<Object, Object>> getAllHotels() {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, hotelService.getAll());
@@ -46,7 +46,7 @@ public class HotelApis {
 	}
 
 	@PutMapping
-	ResponseEntity<Map<Object, Object>> updateHotel(@RequestBody Hotel hotel) {
+	public ResponseEntity<Map<Object, Object>> updateHotel(@RequestBody Hotel hotel) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, hotelService.update(hotel));
@@ -54,7 +54,7 @@ public class HotelApis {
 	}
 
 	@GetMapping("/{hotelId}")
-	ResponseEntity<Map<Object, Object>> getHotelById(@PathVariable String hotelId) {
+	public ResponseEntity<Map<Object, Object>> getHotelById(@PathVariable String hotelId) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, hotelService.getById(hotelId));
@@ -62,7 +62,7 @@ public class HotelApis {
 	}
 
 	@DeleteMapping("/{hotelId}")
-	ResponseEntity<Map<Object, Object>> deleteHotel(@PathVariable String hotelId) {
+	public ResponseEntity<Map<Object, Object>> deleteHotel(@PathVariable String hotelId) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, hotelService.delete(hotelId));

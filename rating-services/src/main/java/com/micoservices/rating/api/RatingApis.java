@@ -30,7 +30,7 @@ public class RatingApis {
 	private final RatingService ratingService;
 
 	@PostMapping
-	ResponseEntity<Map<Object, Object>> saveRatings(@RequestBody RatingMaster ratingMaster) {
+	public ResponseEntity<Map<Object, Object>> saveRatings(@RequestBody RatingMaster ratingMaster) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, ratingService.save(ratingMaster));
@@ -38,7 +38,7 @@ public class RatingApis {
 	}
 
 	@GetMapping
-	ResponseEntity<Map<Object, Object>> getAllRatings() {
+	public ResponseEntity<Map<Object, Object>> getAllRatings() {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, ratingService.getAll());
@@ -46,7 +46,7 @@ public class RatingApis {
 	}
 
 	@PutMapping
-	ResponseEntity<Map<Object, Object>> updateRatings(@RequestBody RatingMaster ratingMaster) {
+	public ResponseEntity<Map<Object, Object>> updateRatings(@RequestBody RatingMaster ratingMaster) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, ratingService.update(ratingMaster));
@@ -54,7 +54,7 @@ public class RatingApis {
 	}
 
 	@GetMapping("/{ratinglId}")
-	ResponseEntity<Map<Object, Object>> getRatingsById(@PathVariable String ratinglId) {
+	public ResponseEntity<Map<Object, Object>> getRatingsById(@PathVariable String ratinglId) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, ratingService.getById(ratinglId));
@@ -62,7 +62,7 @@ public class RatingApis {
 	}
 
 	@DeleteMapping("/{ratinglId}")
-	ResponseEntity<Map<Object, Object>> deleteRating(@PathVariable String ratinglId) {
+	public ResponseEntity<Map<Object, Object>> deleteRating(@PathVariable String ratinglId) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, ratingService.delete(ratinglId));
@@ -70,7 +70,7 @@ public class RatingApis {
 	}
 
 	@GetMapping("/hotel/{hotelId}")
-	ResponseEntity<Map<Object, Object>> getByHotelId(@PathVariable String hotelId) {
+	public ResponseEntity<Map<Object, Object>> getByHotelId(@PathVariable String hotelId) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, ratingService.getRatingsByHotel(hotelId));
@@ -78,7 +78,7 @@ public class RatingApis {
 	}
 
 	@GetMapping("/user/{userId}")
-	ResponseEntity<Map<Object, Object>> getRatingsByUserId(@PathVariable String userId) {
+	public ResponseEntity<Map<Object, Object>> getRatingsByUserId(@PathVariable String userId) {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(SUCCESS, true);
 		map.put(DATA, ratingService.getRatingsByUser(userId));
