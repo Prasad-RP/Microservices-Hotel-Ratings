@@ -69,9 +69,9 @@ public class UserApis {
 	public ResponseEntity<Map<Object, Object>> handleRateLimiting(Exception ex) {
 		Map<Object, Object> map = new HashMap<>();
 		log.info("failed to get data for user ,{}", ex.getMessage());
-		log.info("too many response...");
+		log.info("too many requests...");
 		map.put(SUCCESS, false);
-		map.put(DATA, "Too many connections.");
+		map.put(DATA, "Too many requests...");
 		return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
 	}
 

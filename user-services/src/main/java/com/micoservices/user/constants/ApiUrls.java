@@ -1,6 +1,7 @@
 package com.micoservices.user.constants;
 
 public class ApiUrls {
+	private ApiUrls() {}
 
 	public static final String URL_SEPERATOR = "/";
 	public static final String API = "api";
