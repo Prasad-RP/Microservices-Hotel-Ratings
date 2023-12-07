@@ -8,11 +8,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Application user
+ * 
+ * @author Prasad Pansare
+ *
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "user_masters")
+@Table(name = "user_master")
 public class UserMaster {
 
 	@Id
@@ -28,4 +34,6 @@ public class UserMaster {
 	@Column(name = "about")
 	private String about;
 
+	@Column(name = "password")
+	private String password;
 }
