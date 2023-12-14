@@ -37,3 +37,5 @@ Follow these steps to set up and run the microservices locally:
 3. Access the services through the API Gateway.
 
 This project provides a scalable and modular architecture for building microservices using Spring Boot and integrates well with MySQL and MongoDB databases. Explore each service's repository for more detailed instructions and documentation.
+
+## Microservices Security Still WIP
