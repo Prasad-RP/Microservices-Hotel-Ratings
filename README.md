@@ -33,7 +33,7 @@ Find the source code for each service and infrastructure component on our GitHub
 Follow these steps to set up and run the microservices locally:
 
 1. Clone each repository.
-2. Build and run the services in the following order: Config Server, Eureka Server, User Service, Hotel Service, Ratings Service, and API Gateway.
+2. Build and run the services in the following order:Service Registry, Config Server , User Service, Hotel Service, Ratings Service, and API Gateway.
 3. Access the services through the API Gateway.
 
 This project provides a scalable and modular architecture for building microservices using Spring Boot and integrates well with MySQL and MongoDB databases. Explore each service's repository for more detailed instructions and documentation.
