@@ -1,4 +1,4 @@
-# Microservices with Spring Boot
+# Microservices with Spring Boot (Version 2.X)
 
 Welcome to our Microservices project based on Spring Boot, featuring MySQL and MongoDB integration. This repository includes three core services (User, Hotel, Ratings), an API Gateway, and a Config Server, all hosted on GitHub.
 
